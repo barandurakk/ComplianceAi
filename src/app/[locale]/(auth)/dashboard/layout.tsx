@@ -12,6 +12,7 @@ export default function DashboardLayout(props: { children: React.ReactNode }) {
     <BaseTemplate
       leftNav={
         <>
+        ds
           <li>
             <Link
               href="/dashboard/"
