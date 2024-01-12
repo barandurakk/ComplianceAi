@@ -19,38 +19,7 @@ export default function Layout(props: { children: React.ReactNode }) {
               {t('home_link')}
             </Link>
           </li>
-          <li>
-            <Link
-              href="/about/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('about_link')}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/guestbook/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('guestbook_link')}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/portfolio/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('portfolio_link')}
-            </Link>
-          </li>
-          <li>
-            <a
-              className="border-none text-gray-700 hover:text-gray-900"
-              href="https://github.com/ixartz/Next-js-Boilerplate"
-            >
-              GitHub
-            </a>
-          </li>
+         
         </>
       }
       rightNav={
