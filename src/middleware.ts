@@ -1,8 +1,9 @@
 import { authMiddleware, redirectToSignIn } from '@clerk/nextjs';
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 import { AppConfig } from './utils/AppConfig';
+import { getRoleByUserId, setDefaultRole } from './server/utils/_actions';
 
 const intlMiddleware = createMiddleware({
   locales: AppConfig.locales,
@@ -11,6 +12,7 @@ const intlMiddleware = createMiddleware({
 });
 
 export default authMiddleware({
+  debug: true,
   publicRoutes: (req: NextRequest) =>
     !req.nextUrl.pathname.includes('/dashboard'),
 
@@ -20,12 +22,26 @@ export default authMiddleware({
   },
 
   // eslint-disable-next-line consistent-return
-  afterAuth(auth, req) {
+  afterAuth: async (auth, req) => {
+    
     // Handle users who aren't authenticated
     if (!auth.userId && !auth.isPublicRoute) {
       return redirectToSignIn({ returnBackUrl: req.url });
     }
+    
+    try{
+      const role = await getRoleByUserId(auth.userId)
+      if(!role){
+        await setDefaultRole(auth.userId)
+      }
+
+      return NextResponse.next();
+    }catch(err){
+      console.error(err)
+      return NextResponse.next();
+    }
   },
+
 });
 
 export const config = {

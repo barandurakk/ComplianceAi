@@ -7,7 +7,7 @@ import * as Spotlight from '@spotlightjs/spotlight';
 
 Sentry.init({
   // FIXME: Add your Sentry DSN
-  // dsn: '___DSN___',
+   dsn: 'https://6bc4250d67de610addcc973583b549b0@o4506558001643520.ingest.sentry.io/4506558003216384',
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,
