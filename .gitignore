@@ -50,6 +50,3 @@ local
 
 # vercel
 .vercel
-
-# Sentry Config File
-.sentryclirc

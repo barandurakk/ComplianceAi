@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 import { AppConfig } from './utils/AppConfig';
-import { getRoleByUserId, setDefaultRole } from './server/utils/_actions';
+import {  setDefaultRole } from './server/actions/_authActions';
 
 const intlMiddleware = createMiddleware({
   locales: AppConfig.locales,
@@ -12,9 +12,7 @@ const intlMiddleware = createMiddleware({
 });
 
 export default authMiddleware({
-  debug: true,
-  publicRoutes: (req: NextRequest) =>
-    !req.nextUrl.pathname.includes('/dashboard'),
+  publicRoutes: (req: NextRequest) => ['/', '/sign-in', '/sign-out'].includes(req.nextUrl.pathname),
 
   beforeAuth: (req) => {
     // Execute next-intl middleware before Clerk's auth middleware
@@ -23,27 +21,43 @@ export default authMiddleware({
 
   // eslint-disable-next-line consistent-return
   afterAuth: async (auth, req) => {
-    
-    // Handle users who aren't authenticated
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url });
-    }
-    
-    try{
-      const role = await getRoleByUserId(auth.userId)
-      if(!role){
-        await setDefaultRole(auth.userId)
+
+    const isAuth = Boolean(auth.userId)
+    console.log('isAuth: ', isAuth)
+    const userId = auth.userId
+
+    console.log('currUrl: ', req.nextUrl.pathname)
+
+    if(!isAuth){
+      // Handle users who aren't authenticated
+      if ( !auth.isPublicRoute) {
+        return redirectToSignIn({ returnBackUrl: req.url });
       }
 
-      return NextResponse.next();
-    }catch(err){
-      console.error(err)
-      return NextResponse.next();
+      //If user not auth but route is public
+      if ( auth.isPublicRoute) {
+        return NextResponse.next();
+      }
     }
+
+    //MEMBERS
+    const role =  auth?.sessionClaims?.metadata?.role
+    console.log('role: ', role)
+    if(!role){
+      await setDefaultRole(userId)
+    }
+
+     //If user auth but try to  reach public route
+     if (isAuth && auth.isPublicRoute) {
+      console.log('Its public only, redirecting..')
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    return NextResponse.next();
   },
 
 });
 
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

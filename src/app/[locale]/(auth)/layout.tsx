@@ -1,5 +1,5 @@
 import { enUS, frFR } from '@clerk/localizations';
-import { ClerkProvider } from '@clerk/nextjs';
+import { ClerkProvider,} from '@clerk/nextjs';
 
 export default function AuthLayout(props: {
   children: React.ReactNode;
@@ -27,7 +27,9 @@ export default function AuthLayout(props: {
       signUpUrl={signUpUrl}
       afterSignInUrl={dashboardUrl}
       afterSignUpUrl={dashboardUrl}
+      
     >
+      
       {props.children}
     </ClerkProvider>
   );
